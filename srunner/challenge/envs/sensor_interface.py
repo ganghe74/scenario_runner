@@ -257,6 +257,47 @@ class CANBusSensor(object):
     def destroy(self):
         self._run_ps = False
 
+class ScoreMeasurement(object):
+    def __init__(self, data, frame_number):
+        self.data = data
+        self.frame_number = frame_number
+
+class ScoreSensor(object):
+    def __init__(self, evaluator, reading_frequency):
+        self._evaluator = evaluator
+        self._reading_frequency = reading_frequency
+        self._callback = None
+        self._frame = 0
+        self._run_ps = True
+        self.run()
+    
+    def __call__(self):
+        if self._evaluator is not None:
+            total_score, route_score, infractions_score = self._evaluator.compute_current_statistics()
+            return total_score
+        return 0
+    
+    @threaded
+    def run(self):
+        latest_speed_read = time.time()
+        while self._run_ps:
+            if self._callback is not None:
+                capture = time.time()
+                if capture - latest_speed_read > (1 / self._reading_frequency):
+                    self._callback(ScoreMeasurement(self.__call__(), self._frame))
+                    self._frame += 1
+                    latest_speed_read = time.time()
+                else:
+                    time.sleep(0.001)
+
+    def listen(self, callback):
+        self._callback = callback
+
+    def stop(self):
+        self._run_ps = False
+    
+    def destroy(self):
+        self._run_ps = False
 
 class CallBack(object):
     def __init__(self, tag, sensor, data_provider):
@@ -273,7 +314,8 @@ class CallBack(object):
         elif isinstance(data, carla.GnssEvent):
             self._parse_gnss_cb(data, self._tag)
         elif isinstance(data, CANBusMeasurement) or isinstance(data, HDMapMeasurement) \
-                or isinstance(data, SceneLayoutMeasurement) or isinstance(data, ObjectMeasurements):
+                or isinstance(data, SceneLayoutMeasurement) or isinstance(data, ObjectMeasurements) \
+                    or isinstance(data, ScoreMeasurement):
             self._parse_pseudosensor(data, self._tag)
         else:
             logging.error('No callback method for this sensor.')

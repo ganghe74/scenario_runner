@@ -36,7 +36,7 @@ from agents.navigation.local_planner import RoadOption
 
 import srunner.challenge.utils.route_configuration_parser as parser
 from srunner.challenge.envs.scene_layout_sensors import SceneLayoutReader, ObjectFinder
-from srunner.challenge.envs.sensor_interface import CallBack, CANBusSensor, HDMapReader
+from srunner.challenge.envs.sensor_interface import CallBack, CANBusSensor, HDMapReader, ScoreSensor
 from srunner.challenge.autoagents.autonomous_agent import Track
 from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.carla_data_provider import CarlaActorPool, CarlaDataProvider
@@ -403,6 +403,8 @@ class ChallengeEvaluator(object):
             elif sensor_spec['type'].startswith('sensor.hd_map'):
                 # The HDMap pseudo sensor is created directly here
                 sensor = HDMapReader(vehicle, sensor_spec['reading_frequency'])
+            elif sensor_spec['type'].startswith('sensor.score'):
+                sensor = ScoreSensor(self, sensor_spec['reading_frequency'])
             # These are the sensors spawned on the carla world
             else:
                 bp = bp_library.find(str(sensor_spec['type']))
@@ -757,9 +759,11 @@ class ChallengeEvaluator(object):
         score_route = 0.0
 
         list_traffic_events = []
-        for node in self.master_scenario.scenario.test_criteria.children:
-            if node.list_traffic_events:
-                list_traffic_events.extend(node.list_traffic_events)
+
+        if self.master_scenario is not None:
+            for node in self.master_scenario.scenario.test_criteria.children:
+                if node.list_traffic_events:
+                    list_traffic_events.extend(node.list_traffic_events)
 
         list_collisions = []
         list_red_lights = []

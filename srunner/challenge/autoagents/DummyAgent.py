@@ -37,6 +37,7 @@ class DummyAgent(AutonomousAgent):
                    {'type': 'sensor.other.gnss', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'GPS'},
                    {'type': 'sensor.can_bus', 'reading_frequency': 25, 'id': 'can_bus'},
                    {'type': 'sensor.hd_map', 'reading_frequency': 1, 'id': 'hdmap'},
+                   {'type': 'sensor.score', 'reading_frequency': 10, 'id': 'Score'},
                   ]
 
         return sensors
@@ -50,13 +51,14 @@ class DummyAgent(AutonomousAgent):
             else:
                 print("[{} -- {:06d}] ".format(key, val[0]))
         print("<=====================")
+        print('Score :', input_data['Score'])
 
         # DO SOMETHING SMART
 
         # RETURN CONTROL
         control = carla.VehicleControl()
         control.steer = 0.0
-        control.throttle = 0.0
+        control.throttle = 1.0
         control.brake = 0.0
         control.hand_brake = False
 

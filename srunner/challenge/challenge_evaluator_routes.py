@@ -92,7 +92,7 @@ def convert_json_to_actor(actor_dict):
     node.set('z', actor_dict['z'])
     node.set('yaw', actor_dict['yaw'])
 
-    return ActorConfiguration(node)
+    return ActorConfiguration(node, '')
 
 
 def convert_json_to_transform(actor_dict):

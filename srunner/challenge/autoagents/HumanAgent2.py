@@ -81,17 +81,18 @@ class HumanInterface():
                 image = input_data['Rear'][1][:,:,-2::-1]
             elif 5 <= mode <= 7:
                 image = input_data['Depth'][1][:,:,-2::-1]
-                if mode == 6:
+                if mode != 5:
                     R, G, B = cv2.split(image.astype('float32'))
                     normalized = (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1)
-                    M = np.max(normalized)
-                    divisor = M / 255.0
-                    gray = normalized / divisor
-                    gray = gray.astype('uint8')
+                    if mode == 6:
+                        gray = (normalized * 255).astype('uint8')
+                    else:
+                        in_meter = normalized * 1000
+                        logscale = np.log10(in_meter + 1 - np.min(in_meter))
+                        divisor = np.max(logscale) / 255.0
+                        gray = (logscale / divisor).astype('uint8')
                     image = cv2.merge((gray, gray, gray))
-                elif mode == 7:
-                    pass
-                    "Logarithmic Gray Scale"
+
             elif mode == 8:
                 points = input_data['LIDAR'][1]
                 lidar_data = np.array(points[:, :2])
@@ -103,6 +104,7 @@ class HumanInterface():
                 lidar_img_size = (self.HEIGHT, self.WIDTH, 3)
                 image = np.zeros(lidar_img_size)    
                 image[tuple(lidar_data.T)] = (255, 255, 255)
+                image = image[:,::-1]
 
             # display image
             self._surface = pygame.surfarray.make_surface(image.swapaxes(0, 1))

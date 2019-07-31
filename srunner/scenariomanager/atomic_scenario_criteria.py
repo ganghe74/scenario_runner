@@ -474,8 +474,11 @@ class OnSidewalkTest(Criterion):
         sample_point_right = current_location + carla.Location(x=rot_x.coords[1][0], y=rot_x.coords[1][1])
         sample_point_left = current_location + carla.Location(x=rot_nx.coords[1][0], y=rot_nx.coords[1][1])
 
-        closest_waypoint_right = self._map.get_waypoint(sample_point_right, lane_type=carla.LaneType.Any)
-        closest_waypoint_left = self._map.get_waypoint(sample_point_left, lane_type=carla.LaneType.Any)
+        closest_waypoint_right = self._map.get_waypoint(sample_point_right)
+        closest_waypoint_left = self._map.get_waypoint(sample_point_left)
+
+        # closest_waypoint_right = self._map.get_waypoint(sample_point_right, lane_type=0xffffffff)
+        # closest_waypoint_left = self._map.get_waypoint(sample_point_left, lane_type=0xffffffff)
 
         if closest_waypoint_right and closest_waypoint_left \
                 and closest_waypoint_right.lane_type != carla.LaneType.Sidewalk \

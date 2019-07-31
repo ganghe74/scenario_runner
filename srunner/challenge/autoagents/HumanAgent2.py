@@ -49,19 +49,26 @@ class HumanInterface():
         self.THROTTLE_DELTA = 0.05
         self.STEERING_DELTA = 0.01
 
-        pygame.init()
-        pygame.font.init()
-        self._clock = pygame.time.Clock()
-        self._display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
-        pygame.display.set_caption("Human Agent")
-        self.font = font = pygame.font.Font(pygame.font.get_default_font(), 15)
+        # pygame.init()
+        # pygame.font.init()
+        # self._clock = pygame.time.Clock()
+        # self._display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
+        # pygame.display.set_caption("Human Agent")
+        # self.font = font = pygame.font.Font(pygame.font.get_default_font(), 15)
 
     def run(self):
         while not self._parent.agent_engaged and not self.quit:
             time.sleep(0.5)
 
+        pygame.init()
+        pygame.font.init()
+        self._clock = pygame.time.Clock()
+        self._display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
+        pygame.display.set_caption("Human Agent")
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 15)
         controller = KeyboardControl()
         while not self.quit:
+            print('running')
             self._clock.tick_busy_loop(20)
             controller.parse_events(self._parent.current_control, self._clock)
             # Process events

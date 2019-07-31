@@ -48,15 +48,15 @@ class HumanInterface():
         self.THROTTLE_DELTA = 0.05
         self.STEERING_DELTA = 0.01
 
+    def run(self):
+        while not self._parent.agent_engaged and not self.quit:
+            time.sleep(0.5)
+
         pygame.init()
         pygame.font.init()
         self._clock = pygame.time.Clock()
         self._display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
         pygame.display.set_caption("Human Agent")
-
-    def run(self):
-        while not self._parent.agent_engaged and not self.quit:
-            time.sleep(0.5)
 
         controller = KeyboardControl()
         while not self.quit:
@@ -155,6 +155,7 @@ class KeyboardControl(object):
         self._steer_cache = 0.0
 
     def parse_events(self, control, clock):
+        print('parse_events')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
